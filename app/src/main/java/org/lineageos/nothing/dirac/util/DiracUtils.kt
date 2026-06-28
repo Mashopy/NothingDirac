@@ -26,13 +26,11 @@ class DiracUtils(private val context: Context) {
 
     companion object {
         private var mDiracSound: DiracSound? = null
-        private var mContext: Context? = null
         private var mInitialized = false
         private const val TAG = "DiracUtils"
 
         fun initialize(context: Context) {
             if (!mInitialized) {
-                mContext = context.applicationContext
                 mDiracSound = DiracSound(0, 0)
 
                 val sharedPrefs = DiracPrefs.get(context)
@@ -50,7 +48,13 @@ class DiracUtils(private val context: Context) {
             }
         }
 
-        fun setEnabled(enable: Boolean) {
+        fun release() {
+            mDiracSound?.release()
+            mDiracSound = null
+            mInitialized = false
+        }
+
+        fun setEnabled(enable: Boolean, context: Context? = null) {
             Log.i(TAG, "setEnabled: $enable")
 
             if (mDiracSound == null) {
@@ -62,19 +66,19 @@ class DiracUtils(private val context: Context) {
                     it.setEnabled(enable)
                     Log.i(TAG, "HAL accepted setEnabled")
                 } catch (e: Exception) {
-                    Log.e(TAG, "HAL rejected setEnabled", e)
+                    Log.e(TAG, "HAL rejected setEnabled for value $enable", e)
                 }
             } ?: return
 
             if (enable) {
-                mContext?.let { DiracUtils(it).refreshPlaybackIfNecessary() }
+                context?.let { DiracUtils(it).refreshPlaybackIfNecessary() }
             }
 
             val value = if (enable) "1.000000" else "0.000000"
             try {
                 SystemProperties.set("persist.sys.dirac.enable", value)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to set persist.sys.dirac.enable !")
+                Log.e(TAG, "Failed to set persist.sys.dirac.enable to $value", e)
             }
             Log.i(TAG, "Set Dirac enable to $value")
         }
@@ -83,7 +87,7 @@ class DiracUtils(private val context: Context) {
             try {
                 SystemProperties.set("persist.sys.dirac.scenario", scenario)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to set persist.sys.dirac.scenario !")
+                Log.e(TAG, "Failed to set persist.sys.dirac.scenario to $scenario", e)
             }
             Log.i(TAG, "Set Dirac scenario to $scenario")
         }
@@ -104,7 +108,7 @@ class DiracUtils(private val context: Context) {
                     dirac.setLevel(band, value.toFloat())
                     Log.i(TAG, "HAL accepted write for band $band")
                 } catch (e: Exception) {
-                    Log.e(TAG, "HAL rejected write for band $band")
+                    Log.e(TAG, "HAL rejected write for band $band", e)
                 }
             }
         }
@@ -121,7 +125,7 @@ class DiracUtils(private val context: Context) {
                     it.setVolume(level)
                     Log.i(TAG, "HAL accepted setVolume")
                 } catch (e: Exception) {
-                    Log.e(TAG, "HAL rejected setVolume", e)
+                    Log.e(TAG, "HAL rejected setVolume $level", e)
                 }
             }
 
@@ -129,7 +133,7 @@ class DiracUtils(private val context: Context) {
             try {
                 SystemProperties.set("persist.sys.dirac.volume", floatString)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to set persist.sys.dirac.volume !")
+                Log.e(TAG, "Failed to set persist.sys.dirac.volume to $level", e)
             }
             Log.i(TAG, "Set Dirac volume to $floatString")
         }

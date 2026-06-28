@@ -39,7 +39,7 @@ class DiracViewModel(application: Application) : AndroidViewModel(application) {
     fun setEnabled(enabled: Boolean) {
         prefs.edit { putBoolean("dirac_enable", enabled) }
         _isEnabled.value = enabled
-        DiracUtils.setEnabled(enabled)
+        DiracUtils.setEnabled(enabled, getApplication())
     }
 
     fun setScenario(scenario: String) {

@@ -77,6 +77,11 @@ class DiracSettingsActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        DiracUtils.release()
+    }
 }
 
 @Composable

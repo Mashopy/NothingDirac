@@ -78,4 +78,8 @@ class DiracSound(priority: Int, audioSession: Int) {
         val value = ByteBuffer.allocate(4).order(ByteOrder.nativeOrder()).putFloat(level).array()
         checkStatus(setParameter(intArrayOf(DIRAC_SOUND_PARAM_EQ_LEVEL, band), value))
     }
+
+    fun release() {
+        fx.release()
+    }
 }
