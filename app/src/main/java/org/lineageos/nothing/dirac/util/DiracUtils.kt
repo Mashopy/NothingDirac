@@ -35,6 +35,9 @@ class DiracUtils(private val context: Context) {
 
                 val sharedPrefs = DiracPrefs.get(context)
 
+                val isEnabled = sharedPrefs.getBoolean("dirac_enable", false)
+                setEnabled(isEnabled)
+
                 val savedScenario = sharedPrefs.getString("dirac_scenario_pref", "MUSIC")
                 setScenario(savedScenario)
 

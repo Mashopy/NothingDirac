@@ -251,14 +251,14 @@ fun ListPreference(
     currentValue: String,
     onValueChanged: (String) -> Unit
 ) {
-    var showDialog by remember { mutableStateOf(false) }
+    var showDialog = remember { mutableStateOf(false) }
     val currentIndex = entryValues.indexOf(currentValue).takeIf { it >= 0 } ?: 0
 
     // The actual preference row that sits inside the card
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { showDialog = true }
+            .clickable { showDialog.value = true }
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
         Text(
@@ -274,9 +274,9 @@ fun ListPreference(
         )
     }
 
-    if (showDialog) {
+    if (showDialog.value) {
         AlertDialog(
-            onDismissRequest = { },
+            onDismissRequest = { showDialog.value = false },
             title = {
                 Text(
                     text = title,
@@ -297,6 +297,7 @@ fun ListPreference(
                                 .fillMaxWidth()
                                 .clickable {
                                     onValueChanged(entryValues[index])
+                                    showDialog.value = false
                                 }
                                 .padding(vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -305,6 +306,7 @@ fun ListPreference(
                                 selected = isSelected,
                                 onClick = {
                                     onValueChanged(entryValues[index])
+                                    showDialog.value = false
                                 }
                             )
                             Spacer(modifier = Modifier.width(16.dp))
@@ -318,7 +320,7 @@ fun ListPreference(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { }) {
+                TextButton(onClick = { showDialog.value = false }) {
                     Text(stringResource(id = android.R.string.cancel))
                 }
             }

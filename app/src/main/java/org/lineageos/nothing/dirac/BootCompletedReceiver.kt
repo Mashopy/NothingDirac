@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
+import org.lineageos.nothing.dirac.pref.DiracPrefs
 import org.lineageos.nothing.dirac.util.DiracUtils
 import androidx.core.content.edit
 
@@ -26,13 +27,11 @@ class BootCompletedReceiver : BroadcastReceiver() {
 
         Log.d(TAG, "Received boot completed intent")
 
-        val sharedPrefs = context.getSharedPreferences(
-            "org.lineageos.nothing.dirac_preferences",
-            Context.MODE_PRIVATE
-        )
+        val sharedPrefs = DiracPrefs.get(context)
+
         if (!sharedPrefs.contains("dirac_enable")) {
             sharedPrefs.edit {
-                putBoolean("dirac_enable", true)
+                putBoolean("dirac_enable", false)
                     .putString("dirac_scenario_pref", "MUSIC")
                     .putString("dirac_preset_pref", "0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0")
                     .putInt("dirac_volume_pref", 0)
